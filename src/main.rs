@@ -1,3 +1,5 @@
+use std::fs::{self, File};
+use std::io::Write;
 use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser, Debug)]
@@ -36,11 +38,25 @@ fn create_go_project(project_name: String) {
 
 std::fs::create_dir_all(&project_name);
 
+let path_to_project = format!("{}/{}", std::env::current_dir().unwrap().display(),project_name);
+
 let output = std::process::Command::new("go")
     .arg("mod")
     .arg("init")
     .arg(&project_name)
-    .current_dir(format!("/{}", project_name));
+    .current_dir(&path_to_project)
+    .output();
+
+    let mut file = File::create(format!("{}/main.go",path_to_project )).unwrap();
+
+    file.write_all(b"package main
+    import \"fmt\"
+
+    func main() {
+       fmt.Println(\"Hello, World!\") 
+    }").unwrap();
+
+    println!("{:?}", output);
 }
 
 fn get_name(project_name: Option<String>, default: &str) -> String {
