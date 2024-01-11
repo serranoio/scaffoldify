@@ -1,5 +1,4 @@
 use std::{fs, path::{self, Path}, process::Command};
-
 use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser, Debug)]
@@ -382,9 +381,28 @@ fn apply_root_css() {
     print!("{}", root_css());
 }
 
-fn create_react_files(name: String) {
+fn create_react_files(component_name: String) {
+    std::fs::create_dir_all(to_title_case(&component_name)).unwrap();
+    let folder = Path::new(&component_name);
 
+    let files = vec![
+        (format!("{}.tsx", to_title_case(&component_name)), format!("import './{}.css'
+import React from 'react'
 
+function {}() {{
+    return (
+    <>
+    </>
+    )
+}}
+
+export default {}", to_title_case(&component_name), to_title_case(&component_name), to_title_case(&component_name))),
+(format!("{}.css", to_title_case(&component_name)), format!("")),
+];
+    
+    for file in files {
+        fs::write(folder.join(file.0), file.1).unwrap();
+    }
 }
 
 fn main() {
