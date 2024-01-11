@@ -13,7 +13,6 @@ struct Scaffoldify {
 #[derive(Debug, Subcommand)]
 pub enum Subcommands {
    //  create differnt scaffolds
-    
    #[clap(name = "create", short_flag = 'c')] 
    Create(Scaffolds),
    #[clap(name = "new", short_flag = 'n')] 
@@ -21,7 +20,6 @@ pub enum Subcommands {
    #[clap(name = "pattern", short_flag = 'p')] 
    Pattern(PatternScaffolds),
 }
-
 
 #[derive(Debug,  Args)]
 pub struct PatternScaffolds {
@@ -35,7 +33,6 @@ pub enum AvailablePatterns {
     #[clap(name = "css", short_flag = 'c')] 
     Css(CssOptions),
 }
-
 
 #[derive(Debug,  Args)]
 pub struct CssOptions {
@@ -56,7 +53,6 @@ pub struct Scaffolds {
     pub name: Option<String>,
     #[clap(subcommand)]
     pub available_scaffolds: AvailableScaffolds,
-
 }
 
 #[derive(Debug, Subcommand)]
@@ -163,7 +159,7 @@ export default css`
 {}
 `;", global_reset_css())),
 
-        (format!("{}-element.ts", component_name), format!("import {{ CSSResultGroup, LitElement, html }} from 'lit'
+(format!("{}-element.ts", component_name), format!("import {{ CSSResultGroup, LitElement, html }} from 'lit'
 import {{ customElement, property }} from 'lit/decorators.js'
 import {}Css from './{}-css'
         
@@ -198,6 +194,20 @@ return html`
         fs::write(path, file.1).unwrap();
     }
 }
+
+fn new_react_project(project_name: String) {
+    std::fs::create_dir_all(&project_name).unwrap();
+    let current_dir = format!("{}/{}", std::env::current_dir().unwrap().display(), project_name);
+
+    std::process::Command::new("git")
+    .arg("clone")
+    .arg("https://github.com/serranoio/react.git")
+    .arg(".")
+    .current_dir(&current_dir)
+    .output()
+    .unwrap();
+}
+
 
 fn root_css() -> String {
 
@@ -358,14 +368,6 @@ html {
 
 fn apply_global_css() {
     print!("{}", global_reset_css());
-    // let output = Command::new("sh")
-    // .arg("-c")
-    // .arg(format!("printf '{}' | xclip --selection clipboard", global_reset_css()))
-    // .output()
-    // .expect("Failed to execute command");
-
-    // println!("Output: {:?}", String::from_utf8_lossy(&output.stderr));
-    // println!("Output: {:?}", String::from_utf8_lossy(&output.stdout));
 }
 
 fn apply_root_css() {
@@ -379,7 +381,7 @@ fn main() {
         Subcommands::New(scaffold) => {
             match scaffold.available_scaffolds {
                 AvailableScaffolds::React => {
-                    println!("New project")
+                    new_react_project(get_name(scaffold.name, "react"))
                 },
                 AvailableScaffolds::Lit => {
                     new_lit_project(get_name(scaffold.name, "new"))
