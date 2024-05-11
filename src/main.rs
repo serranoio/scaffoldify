@@ -1,3 +1,5 @@
+// David Serrano
+// Jan 17th, 2024
 use std::{fs, path::{self, Path}};
 
 use clap::{Args, Parser, Subcommand};
@@ -146,6 +148,30 @@ fn new_lit_project(project_name: String) {
     .current_dir(&current_dir)
     .output()
     .unwrap();
+}
+
+fn create_react_files(component_name: &String) {
+    std::fs::create_dir_all(&component_name).unwrap();
+
+let files: Vec<(String, String)> = vec![
+    (format!("{}.tsx", to_title_case(component_name)), format!("import React from \"react\"
+import \"./{}.css\"
+    
+export default function {}() {{
+    return <>
+    </>
+}}", to_title_case(component_name), to_title_case(component_name))),
+    (format!("{}.css", to_title_case(component_name)), format!(""))];
+
+
+    let title_case = to_title_case(&component_name);
+
+    let path = Path::new(&title_case);
+    for file in files {
+
+        let path = Path::new(path).join(file.0);
+        fs::write(path, file.1).unwrap();
+    }
 }
 
 fn create_lit_files(component_name: &String) {
@@ -393,7 +419,7 @@ fn main() {
         }, Subcommands::Create(scaffold) => {
             match scaffold.available_scaffolds {
                 AvailableScaffolds::React => {
-                    println!("Writing in react!")
+                    create_react_files(&get_name(scaffold.name, "Default.tsx"))
                 },
                 AvailableScaffolds::Lit => {
                     create_lit_files(&get_name(scaffold.name, "default.ts"))
