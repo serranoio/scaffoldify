@@ -1,6 +1,6 @@
 // David Serrano
 // Jan 17th, 2024
-use std::{fs, path::{self, Path}};
+use std::{fs, os::unix::raw::time_t, path::{self, Path}};
 
 use clap::{Args, Parser, Subcommand};
 
@@ -172,6 +172,10 @@ export default function {}() {{
         let path = Path::new(path).join(file.0);
         fs::write(path, file.1).unwrap();
     }
+
+    let wd = std::env::current_dir().unwrap();
+
+    println!("import {} from \"{}/{}/{}\"", title_case, wd.display(), title_case, title_case);
 }
 
 fn create_lit_files(component_name: &String) {
