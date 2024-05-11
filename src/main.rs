@@ -225,10 +225,18 @@ fn new_react_project(project_name: String) {
     std::fs::create_dir_all(&project_name).unwrap();
     let current_dir = format!("{}/{}", std::env::current_dir().unwrap().display(), project_name);
 
+    println!("Cloning...");
     std::process::Command::new("git")
     .arg("clone")
     .arg("https://github.com/serranoio/react.git")
     .arg(".")
+    .current_dir(&current_dir)
+    .output()
+    .unwrap();
+
+    println!("installing dep...");
+    Command::new("npm")
+    .arg("i")
     .current_dir(&current_dir)
     .output()
     .unwrap();
@@ -400,6 +408,7 @@ fn apply_root_css() {
     print!("{}", root_css());
 }
 
+
 fn main() {
     let cli = Scaffoldify::parse();
 
@@ -419,7 +428,7 @@ fn main() {
         }, Subcommands::Create(scaffold) => {
             match scaffold.available_scaffolds {
                 AvailableScaffolds::React => {
-                    create_react_files(&get_name(scaffold.name, "Default.tsx"))
+                    println!("Writing in react!")
                 },
                 AvailableScaffolds::Lit => {
                     create_lit_files(&get_name(scaffold.name, "default.ts"))
@@ -443,4 +452,6 @@ fn main() {
             }
         }
     }
+
+    println!("Done!");
 }
